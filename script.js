@@ -48,6 +48,19 @@ const createElement = (positionX, positionY, resize, fillColor, labelText) => {
     return circle;
  }
   
+ const orbit = V('<ellipse/>');
+ 
+ orbit.attr({
+     cx: constraint.x,
+     cy: constraint.y,
+     rx: constraint.a,
+     ry: constraint.b,
+     fill: "transparent",
+     stroke: "black"
+ });
+   
+ V(paper.viewport).append(orbit);
+
  const sun = createElement(843, 370, 200, 'yellow', 'Sun');
  const mercury = createElement(1086, 448, 50, 'gray', 'Mercury');
  const venus = createElement(1174, 428, 85, 'orange', 'Venus');

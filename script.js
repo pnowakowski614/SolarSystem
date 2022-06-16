@@ -31,8 +31,8 @@ const graph = new joint.dia.Graph({}, { cellNamespace: namespace });
 const paper = new joint.dia.Paper({
    el: document.getElementById('myholder'),
    model: graph,
-   width: 1830,
-   height: 960,
+   width: 1848,
+   height: 980,
    gridSize: 1,
    elementView: ConstraintElementView,
    interactive: function(elementView) {
@@ -96,3 +96,61 @@ const mercury = createElement(initPositions(mercuryConstraint, 300, 300, -40, -1
 const venus = createElement(initPositions(venusConstraint, 1500, 1500, -40, -50), 85, 'orange', 'Venus', true, venusConstraint);
 const earth = createElement(initPositions(earthConstraint, 100, 100, -40, -50), 100, 'blue', 'Earth', true, earthConstraint);
 const mars = createElement(initPositions(marsConstraint, 700, 1000, -40, -30), 70, 'red', 'Mars', true, marsConstraint);
+
+paper.on('element:pointerclick', function(elementView) {
+    joint.ui.Inspector.create('#inspector-container', {
+        cell: elementView.model,
+        inputs: {
+            'attrs/label/text': {
+                type: 'text',
+                label: 'Name',
+                index: 1
+            },
+            'attrs/body/fill': {
+                type: 'color-palette',
+                options: [
+                    { content: '#FFFFFF' },
+                    { content: '#FF0000' },
+                    { content: '#00FF00' },
+                    { content: '#0000FF' },
+                    { content: '#000000' }
+                ],
+                label: 'Fill color',
+                index: 2
+            },
+            'attrs/label/fill': {
+                type: 'color-palette',
+                options: [
+                    { content: '#FFFFFF' },
+                    { content: '#FF0000' },
+                    { content: '#00FF00' },
+                    { content: '#0000FF' },
+                    { content: '#000000' }
+                ],
+                label: 'Label color',
+                index: 3
+            },
+            'attrs/body/stroke': {
+                type: 'color-palette',
+                options: [
+                    { content: '#FFFFFF' },
+                    { content: '#FF0000' },
+                    { content: '#00FF00' },
+                    { content: '#0000FF' },
+                    { content: '#000000' }
+                ],
+                label: 'Border color',
+                index: 4
+            },
+            'attrs/body/stroke-width': {
+                type: 'range',
+                min: 0,
+                max: 50,
+                unit: 'px',
+                label: 'Border width',
+                index: 5
+            }
+        }
+    });
+ });
+ 

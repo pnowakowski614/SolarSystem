@@ -1,5 +1,20 @@
 const namespace = joint.shapes;
 const backgroundImage = 'cosmos.jpg';
+constraint = g.ellipse(g.point(850, 480), 450, 340)
+
+const ConstraintElementView = joint.dia.ElementView.extend({
+    pointerdown: function(evt) {
+        const position = this.model.get('position');
+        const size = this.model.get('size');
+        const center = g.rect(position.x, position.y, size.width, size.height).center();
+        const intersection = constraint.intersectionWithLineFromCenterToPoint(center);
+        joint.dia.ElementView.prototype.pointerdown.apply(this, [evt, intersection.x, intersection.y]);
+    },
+    pointermove: function(evt, x, y) {
+        const intersection = constraint.intersectionWithLineFromCenterToPoint(g.point(x, y));
+        joint.dia.ElementView.prototype.pointermove.apply(this, [evt, intersection.x, intersection.y]);
+    }
+});
 
 const graph = new joint.dia.Graph({}, { cellNamespace: namespace });
 
@@ -9,6 +24,7 @@ const paper = new joint.dia.Paper({
     width: 1830,
     height: 960,
     gridSize: 1,
+    elementView: ConstraintElementView,
     background: {
         image: backgroundImage
     },

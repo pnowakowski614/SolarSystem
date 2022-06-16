@@ -41,23 +41,25 @@ const paper = new joint.dia.Paper({
     cellViewNamespace: namespace
 });
 
-const createElement = (positionX, positionY, resize, fillColor, labelText, constraintName) => {
-    const circle = new joint.shapes.standard.Circle();
-    circle.position(positionX, positionY);
-    circle.resize(resize, resize);
-    circle.attr({
-        body: {
-            fill: fillColor
-        },
-        label: {
-            text: labelText,
-            fill: 'black'
+const createElement = (customPosition, resize, fillColor, labelText, constraintName) => {
+    const circle = new joint.shapes.standard.Circle({
+        position: customPosition,
+        size: {width: resize, height: resize},
+        attrs: {
+            body: {
+                fill: fillColor
+            },
+            label: {
+                text: labelText,
+                fill: 'black'
+            },
         }
-    });
+    })
     circle.prop('data/constraint', constraintName);
     circle.addTo(graph);
     return circle;
  }
+ 
   
  const createOrbit = (constraint) => {
     const orbit = V('<ellipse/>');
@@ -74,14 +76,19 @@ const createElement = (positionX, positionY, resize, fillColor, labelText, const
     V(paper.viewport).append(orbit);
     return orbit;
  }
+
+ const initPositions = (constraint, orbitPointX, orbitPointY, offsetX, offsetY) => {
+    const position = constraint.intersectionWithLineFromCenterToPoint(g.point(orbitPointX, orbitPointY)).offset(offsetX, offsetY)
+    return position;
+ } 
   
  const earthOrbit = createOrbit(earthConstraint);
  const mercuryOrbit = createOrbit(mercuryConstraint);
  const venusOrbit = createOrbit(venusConstraint);
  const marsOrbit = createOrbit(marsConstraint);
 
- const sun = createElement(843, 370, 200, 'yellow', 'Sun', earthConstraint);
- const mercury = createElement(1086, 448, 50, 'gray', 'Mercury', mercuryConstraint);
- const venus = createElement(1174, 428, 85, 'orange', 'Venus', venusConstraint);
- const earth = createElement(1298, 415, 100, 'blue', 'Earth', earthConstraint);
- const mars = createElement(1439, 430, 70, 'red', 'Mars', marsConstraint);
+ const sun = createElement({x: 750, y: 380}, 200, 'yellow', 'Sun', earthConstraint);
+ const mercury = createElement(initPositions(mercuryConstraint, 300, 300, -40, -10), 50, 'gray', 'Mercury', mercuryConstraint);
+ const venus = createElement(initPositions(venusConstraint, 1500, 1500, -40, -50), 85, 'orange', 'Venus', venusConstraint);
+ const earth = createElement(initPositions(earthConstraint, 100, 100, -40, -50), 100, 'blue', 'Earth', earthConstraint);
+ const mars = createElement(initPositions(marsConstraint, 700, 1000, -40, -30), 70, 'red', 'Mars', marsConstraint);

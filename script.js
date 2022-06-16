@@ -31,8 +31,8 @@ const graph = new joint.dia.Graph({}, { cellNamespace: namespace });
 const paper = new joint.dia.Paper({
    el: document.getElementById('myholder'),
    model: graph,
-   width: 1830,
-   height: 960,
+   width: 1848,
+   height: 980,
    gridSize: 1,
    elementView: ConstraintElementView,
    interactive: function(elementView) {

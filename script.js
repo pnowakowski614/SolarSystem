@@ -153,4 +153,23 @@ paper.on('element:pointerclick', function(elementView) {
         }
     });
  });
+
+const stencil = new joint.ui.Stencil({
+    paper: paper,
+    width: 240,
+    groups: {
+        planets: { index: 1, label: 'Planets' },
+    },
+    layout: {
+        columnWidth: 240,
+        columns: 1,
+        rowHeight: 100,
+    },
+    dropAnimation: true,
+ });
   
+document.querySelector('#stencil-container').appendChild(stencil.el);
+ stencil.render().load({
+    planets: [earth.clone(), mercury.clone(), mars.clone(), venus.clone()]
+ });
+ 

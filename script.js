@@ -1,6 +1,30 @@
 const namespace = joint.shapes;
 const backgroundImage = 'cosmos.jpg';
 const initPoint = g.point(850, 480);
+
+const elementParameters = {
+    'Sun': {size: 200},
+    'Mercury': {
+        size: 50,
+        newPlanetX: 825,
+        newPlanetY: 313,
+    },
+    'Venus': {
+        size: 85,
+        newPlanetX: 808,
+        newPlanetY: 202,
+    },
+    'Earth': {
+        size: 100,
+        newPlanetX: 800,
+        newPlanetY: 94,
+    },
+    'Mars': {
+        size: 70,
+        newPlanetX: 814,
+        newPlanetY: 11,
+    }
+ } 
  
 const createConstraint = (y, radiusX) => {
    constraint = g.ellipse(initPoint, y, radiusX)
@@ -61,8 +85,11 @@ const createElement = (customPosition, resize, fillColor, labelText, canMove, co
            },
        }
    })
-   circle.prop('data/status', canMove);
-   circle.prop('data/constraint', constraintName);
+   circle.prop({data: {
+    status: canMove,
+    constraint: constraintName,
+    planetName: labelText
+}})
    circle.addTo(graph);
    return circle;
 }
@@ -153,4 +180,35 @@ paper.on('element:pointerclick', function(elementView) {
         }
     });
  });
+
+const stencil = new joint.ui.Stencil({
+    paper: paper,
+    width: 240,
+    groups: {
+        planets: { index: 1, label: 'Planets' },
+    },
+    layout: {
+        columnWidth: 240,
+        columns: 1,
+        rowHeight: 100,
+    },
+    dropAnimation: true,
+ });
+  
+document.querySelector('#stencil-container').appendChild(stencil.el);
+ stencil.render().load({
+    planets: [earth.clone(), mercury.clone(), mars.clone(), venus.clone()]
+ });
+ 
+ graph.on('add', (cell) => {
+    const currentPlanet = cell.attributes.data.planetName;
+    cell.resize(elementParameters[currentPlanet].size, elementParameters[currentPlanet].size);
+    return cell;
+ })
+  
+ graph.on('add', (cell) => {
+    const currentPlanet = cell.attributes.data.planetName;
+    cell.position(elementParameters[currentPlanet].newPlanetX, elementParameters[currentPlanet].newPlanetY);
+    return cell;
+ })
  

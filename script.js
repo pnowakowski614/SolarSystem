@@ -118,11 +118,11 @@ const mercuryOrbit = createOrbit(mercuryConstraint);
 const venusOrbit = createOrbit(venusConstraint);
 const marsOrbit = createOrbit(marsConstraint);
  
-const sun = createElement({x: 750, y: 380}, 200, 'yellow', 'Sun', false, earthConstraint);
-const mercury = createElement(initPositions(mercuryConstraint, 300, 300, -40, -10), 50, 'gray', 'Mercury', true, mercuryConstraint);
-const venus = createElement(initPositions(venusConstraint, 1500, 1500, -40, -50), 85, 'orange', 'Venus', true, venusConstraint);
-const earth = createElement(initPositions(earthConstraint, 100, 100, -40, -50), 100, 'blue', 'Earth', true, earthConstraint);
-const mars = createElement(initPositions(marsConstraint, 700, 1000, -40, -30), 70, 'red', 'Mars', true, marsConstraint);
+const sun = createElement({x: 750, y: 380}, elementParameters['Sun'].size, 'yellow', 'Sun', false, earthConstraint);
+const mercury = createElement(initPositions(mercuryConstraint, 300, 300, -40, -10), elementParameters['Mercury'].size, 'gray', 'Mercury', true, mercuryConstraint);
+const venus = createElement(initPositions(venusConstraint, 1500, 1500, -40, -50), elementParameters['Venus'].size, 'orange', 'Venus', true, venusConstraint);
+const earth = createElement(initPositions(earthConstraint, 100, 100, -40, -50), elementParameters['Earth'].size, 'blue', 'Earth', true, earthConstraint);
+const mars = createElement(initPositions(marsConstraint, 700, 1000, -40, -30), elementParameters['Mars'].size, 'red', 'Mars', true, marsConstraint);
 
 paper.on('element:pointerclick', function(elementView) {
     joint.ui.Inspector.create('#inspector-container', {

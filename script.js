@@ -2,6 +2,14 @@ const namespace = joint.shapes;
 const backgroundImage = 'cosmos.jpg';
 const initPoint = g.point(850, 480);
 
+const colorPalette = [
+    { content: '#FFFFFF' },
+    { content: '#FF0000' },
+    { content: '#00FF00' },
+    { content: '#0000FF' },
+    { content: '#000000' }
+]
+
 const elementParameters = {
     'Sun': {size: 200},
     'Mercury': {
@@ -25,50 +33,67 @@ const elementParameters = {
         newPlanetY: 11,
     }
  } 
- 
-const createConstraint = (y, radiusX) => {
-   return g.ellipse(initPoint, y, radiusX)
+
+const ConstraintElementView = joint.dia.ElementView.extend({
+pointerdown: function(evt) {
+    const position = this.model.get('position');
+    const size = this.model.get('size');
+    const center = g.rect(position.x, position.y, size.width, size.height).center();
+    const intersection = this.model.attributes.data.constraint.intersectionWithLineFromCenterToPoint(center);
+    joint.dia.ElementView.prototype.pointerdown.apply(this, [evt, intersection.x, intersection.y]);
+},
+pointermove: function(evt, x, y) {
+    const intersection = this.model.attributes.data.constraint.intersectionWithLineFromCenterToPoint(g.point(x, y));
+    joint.dia.ElementView.prototype.pointermove.apply(this, [evt, intersection.x, intersection.y]);
+}
+});
+
+const graph = new joint.dia.Graph({}, { cellNamespace: namespace });
+
+const paper = new joint.dia.Paper({
+el: document.getElementById('paper-container'),
+model: graph,
+width: 1848,
+height: 980,
+gridSize: 1,
+elementView: ConstraintElementView,
+interactive: function(elementView) {
+    if (elementView.model.attributes.data.status === false){
+        return {elementMove: false};
+    }
+    else return true;
+},
+background: {
+    image: backgroundImage
+},
+cellViewNamespace: namespace
+});
+
+const createOrbit = (constraint) => {
+const orbit = V('<ellipse/>');
+
+orbit.attr({
+    cx: constraint.x,
+    cy: constraint.y,
+    rx: constraint.a,
+    ry: constraint.b,
+    fill: "transparent",
+    stroke: "black"
+});
+    
+V(paper.viewport).append(orbit);
 }
  
+const createConstraint = (y, radiusX) => {
+   const constraint = g.ellipse(initPoint, y, radiusX);
+   createOrbit(constraint);
+   return constraint;
+}
+
 const earthConstraint = createConstraint(450, 340);
 const mercuryConstraint = createConstraint(170, 140);
 const venusConstraint = createConstraint(300, 230);
 const marsConstraint = createConstraint(600, 440);
- 
-const ConstraintElementView = joint.dia.ElementView.extend({
-   pointerdown: function(evt) {
-       const position = this.model.get('position');
-       const size = this.model.get('size');
-       const center = g.rect(position.x, position.y, size.width, size.height).center();
-       const intersection = this.model.attributes.data.constraint.intersectionWithLineFromCenterToPoint(center);
-       joint.dia.ElementView.prototype.pointerdown.apply(this, [evt, intersection.x, intersection.y]);
-   },
-   pointermove: function(evt, x, y) {
-       const intersection = this.model.attributes.data.constraint.intersectionWithLineFromCenterToPoint(g.point(x, y));
-       joint.dia.ElementView.prototype.pointermove.apply(this, [evt, intersection.x, intersection.y]);
-   }
-});
- 
-const graph = new joint.dia.Graph({}, { cellNamespace: namespace });
- 
-const paper = new joint.dia.Paper({
-   el: document.getElementById('paper-container'),
-   model: graph,
-   width: 1848,
-   height: 980,
-   gridSize: 1,
-   elementView: ConstraintElementView,
-   interactive: function(elementView) {
-       if (elementView.model.attributes.data.status === false){
-           return {elementMove: false};
-       }
-       else return true;
-   },
-   background: {
-       image: backgroundImage
-   },
-   cellViewNamespace: namespace
-});
  
 const createElement = (customPosition, resize, fillColor, labelText, canMove, constraintName) => {
    const circle = new joint.shapes.standard.Circle({
@@ -92,29 +117,10 @@ const createElement = (customPosition, resize, fillColor, labelText, canMove, co
    circle.addTo(graph);
    return circle;
 }
-const createOrbit = (constraint) => {
-   const orbit = V('<ellipse/>');
- 
-   orbit.attr({
-       cx: constraint.x,
-       cy: constraint.y,
-       rx: constraint.a,
-       ry: constraint.b,
-       fill: "transparent",
-       stroke: "black"
-   });
-     
-   V(paper.viewport).append(orbit);
-}
  
 const initPositions = (constraint, orbitPointX, orbitPointY, offsetX, offsetY) => {
     return constraint.intersectionWithLineFromCenterToPoint(g.point(orbitPointX, orbitPointY)).offset(offsetX, offsetY)
  }
-
-createOrbit(earthConstraint);
-createOrbit(mercuryConstraint);
-createOrbit(venusConstraint);
-createOrbit(marsConstraint);
  
 const sun = createElement({x: 750, y: 380}, 
     elementParameters['Sun'].size, 'yellow', 'Sun', false);
@@ -143,37 +149,19 @@ paper.on('element:pointerclick', function(elementView) {
             },
             'attrs/body/fill': {
                 type: 'color-palette',
-                options: [
-                    { content: '#FFFFFF' },
-                    { content: '#FF0000' },
-                    { content: '#00FF00' },
-                    { content: '#0000FF' },
-                    { content: '#000000' }
-                ],
+                options: colorPalette,
                 label: 'Fill color',
                 index: 2
             },
             'attrs/label/fill': {
                 type: 'color-palette',
-                options: [
-                    { content: '#FFFFFF' },
-                    { content: '#FF0000' },
-                    { content: '#00FF00' },
-                    { content: '#0000FF' },
-                    { content: '#000000' }
-                ],
+                options: colorPalette,
                 label: 'Label color',
                 index: 3
             },
             'attrs/body/stroke': {
                 type: 'color-palette',
-                options: [
-                    { content: '#FFFFFF' },
-                    { content: '#FF0000' },
-                    { content: '#00FF00' },
-                    { content: '#0000FF' },
-                    { content: '#000000' }
-                ],
+                options: colorPalette,
                 label: 'Border color',
                 index: 4
             },

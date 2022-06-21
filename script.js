@@ -27,8 +27,7 @@ const elementParameters = {
  } 
  
 const createConstraint = (y, radiusX) => {
-   constraint = g.ellipse(initPoint, y, radiusX)
-   return constraint;
+   return g.ellipse(initPoint, y, radiusX)
 }
  
 const earthConstraint = createConstraint(450, 340);
@@ -53,7 +52,7 @@ const ConstraintElementView = joint.dia.ElementView.extend({
 const graph = new joint.dia.Graph({}, { cellNamespace: namespace });
  
 const paper = new joint.dia.Paper({
-   el: document.getElementById('myholder'),
+   el: document.getElementById('paper-container'),
    model: graph,
    width: 1848,
    height: 980,
@@ -106,23 +105,32 @@ const createOrbit = (constraint) => {
    });
      
    V(paper.viewport).append(orbit);
-   return orbit;
 }
  
 const initPositions = (constraint, orbitPointX, orbitPointY, offsetX, offsetY) => {
-    const position = constraint.intersectionWithLineFromCenterToPoint(g.point(orbitPointX, orbitPointY)).offset(offsetX, offsetY)
-    return position;
+    return constraint.intersectionWithLineFromCenterToPoint(g.point(orbitPointX, orbitPointY)).offset(offsetX, offsetY)
  }
-const earthOrbit = createOrbit(earthConstraint);
-const mercuryOrbit = createOrbit(mercuryConstraint);
-const venusOrbit = createOrbit(venusConstraint);
-const marsOrbit = createOrbit(marsConstraint);
+
+createOrbit(earthConstraint);
+createOrbit(mercuryConstraint);
+createOrbit(venusConstraint);
+createOrbit(marsConstraint);
  
-const sun = createElement({x: 750, y: 380}, elementParameters['Sun'].size, 'yellow', 'Sun', false, earthConstraint);
-const mercury = createElement(initPositions(mercuryConstraint, 300, 300, -40, -10), elementParameters['Mercury'].size, 'gray', 'Mercury', true, mercuryConstraint);
-const venus = createElement(initPositions(venusConstraint, 1500, 1500, -40, -50), elementParameters['Venus'].size, 'orange', 'Venus', true, venusConstraint);
-const earth = createElement(initPositions(earthConstraint, 100, 100, -40, -50), elementParameters['Earth'].size, 'blue', 'Earth', true, earthConstraint);
-const mars = createElement(initPositions(marsConstraint, 700, 1000, -40, -30), elementParameters['Mars'].size, 'red', 'Mars', true, marsConstraint);
+const sun = createElement({x: 750, y: 380}, 
+    elementParameters['Sun'].size, 'yellow', 'Sun', false);
+
+const mercury = createElement(initPositions(mercuryConstraint, 300, 300, -40, -10), 
+    elementParameters['Mercury'].size, 'gray', 'Mercury', true, mercuryConstraint);
+
+const venus = createElement(initPositions(venusConstraint, 1500, 1500, -40, -50),
+    elementParameters['Venus'].size, 'orange', 'Venus', true, venusConstraint);
+
+const earth = createElement(initPositions(earthConstraint, 100, 100, -40, -50), 
+    elementParameters['Earth'].size, 'blue', 'Earth', true, earthConstraint);
+
+const mars = createElement(initPositions(marsConstraint, 700, 1000, -40, -30), 
+    elementParameters['Mars'].size, 'red', 'Mars', true, marsConstraint);
+
 
 paper.on('element:pointerclick', function(elementView) {
     joint.ui.Inspector.create('#inspector-container', {
@@ -171,6 +179,7 @@ paper.on('element:pointerclick', function(elementView) {
             },
             'attrs/body/stroke-width': {
                 type: 'range',
+                defaultValue: 1,
                 min: 0,
                 max: 50,
                 unit: 'px',
@@ -203,12 +212,10 @@ document.querySelector('#stencil-container').appendChild(stencil.el);
  graph.on('add', (cell) => {
     const currentPlanet = cell.attributes.data.planetName;
     cell.resize(elementParameters[currentPlanet].size, elementParameters[currentPlanet].size);
-    return cell;
  })
   
  graph.on('add', (cell) => {
     const currentPlanet = cell.attributes.data.planetName;
     cell.position(elementParameters[currentPlanet].newPlanetX, elementParameters[currentPlanet].newPlanetY);
-    return cell;
  })
  
